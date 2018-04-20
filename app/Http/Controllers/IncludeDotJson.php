@@ -29,7 +29,7 @@ class IncludeDotJson extends Controller
                     "type"=>"zip",
                     "url"=>"http://composer.pulsestorm.dynamic/dist/" .
                         $fullName . "/" .
-                        $package->vendor_name . "-" . $package->package_name . ".zip"
+                        $package->getDisplayFilename()
                 ],
                 "time"=>$package->created_at,
                 "type"=>"library",
@@ -54,7 +54,11 @@ class IncludeDotJson extends Controller
             $packageId  = $package->getFullName();
             $version    = $package->getVersion();
 
-            $json["packages"][$packageId] = [];
+            if(!isset($json["packages"][$packageId]))
+            {
+                $json["packages"][$packageId] = [];
+            }
+
             $json["packages"][$packageId][$version]   = $this
                 ->getJsonConfigFromPackage($package, $version, $packageId);
         }

@@ -15,7 +15,7 @@
 //     return view('welcome');
 // });
 
-Route::get('dist/pulsestorm/magento2-hello-world/pulsestorm-magento2-hello-world.zip', 'ServePackage@execute')
+Route::get('dist/{vendor}/{packagename}/{filename}', 'ServePackage@execute')
     ->middleware('auth.basic');
 
 Route::get('include/all$ca849c8894d293113b16b713878ee8a917f17b08.json', 'IncludeDotJson@execute');
