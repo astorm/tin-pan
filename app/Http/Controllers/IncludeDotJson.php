@@ -4,32 +4,88 @@ use App\Http\Controllers\Controller;
 
 class IncludeDotJson extends Controller
 {
+    protected $packages;
+    protected $versionManager;
+
+    public function __construct(
+        \App\Package $packages,
+        \Composer\Semver\VersionParser $versionManager
+    )
+    {
+        $this->packages = $packages;
+        $this->versionManager = $versionManager;
+    }
+
+    protected function getJsonConfigFromPackage($package, $version, $packageId)
+    {
+        $versionNormalized  = $package
+            ->getNormalizedVersion($this->versionManager);
+        $fullName           = $package->getFullName();
+        return [
+                "name"=>$packageId,
+                "version"=>$version,
+                "version_normalized"=>$versionNormalized,
+                "dist"=>[
+                    "type"=>"zip",
+                    "url"=>"http://composer.pulsestorm.dynamic/dist/" .
+                        $fullName . "/" .
+                        $package->vendor_name . "-" . $package->package_name . ".zip"
+                ],
+                "time"=>$package->created_at,
+                "type"=>"library",
+                "installation-source"=>"",
+                "license"=>"commercial",
+                "description"=>"A simple Hello World model for Magento 2 MVVM (or MVVM like) system.",
+                "support"=>[
+                    "source"=>"https://example.com/support",
+                    "issues"=>"https://example.com/issues"
+                ]];
+
+    }
+
     public function execute()
     {
-        $json = [
-            "packages" => [
-                "pulsestorm/magento2-hello-world"=>[
-                    "dev-master"=>[
-                        "name"=>"pulsestorm/magento2-hello-world",
-                        "version"=>"dev-master",
-                        "version_normalized"=>"9999999-dev",
-                        "dist"=>[
-                            "type"=>"zip",
-                            "url"=>"http://composer.pulsestorm.dynamic/dist/pulsestorm/magento2-hello-world/pulsestorm-magento2-hello-world.zip"
-                        ],
-                        "time"=>"2016-04-19T21:39:58+00:00",
-                        "type"=>"library",
-                        "installation-source"=>"",
-                        "license"=>"commercial",
-                        "description"=>"A simple Hello World model for Magento 2 MVVM (or MVVM like) system.",
-                        "support"=>[
-                            "source"=>"https://example.com/support",
-                            "issues"=>"https://example.com/issues"
-                        ]
-                    ]
-                ]
-            ]
-        ];
+        $packages = $this->packages->all();
+
+        $json = ["packages"=>[]];
+        foreach($packages as $package)
+        {
+            $tmp = [];
+            $packageId  = $package->getFullName();
+            $version    = $package->getVersion();
+
+            $json["packages"][$packageId] = [];
+            $json["packages"][$packageId][$version]   = $this
+                ->getJsonConfigFromPackage($package, $version, $packageId);
+        }
+
+
+//         $json = [
+//             "packages" => [
+//                 "pulsestorm/magento2-hello-world"=>[
+//                     "dev-master"=>[
+//                         "name"=>"pulsestorm/magento2-hello-world",
+//                         "version"=>"dev-master",
+//                         "version_normalized"=>"9999999-dev",
+//                         "dist"=>[
+//                             "type"=>"zip",
+//                             "url"=>"http://composer.pulsestorm.dynamic/dist/pulsestorm/magento2-hello-world/pulsestorm-magento2-hello-world.zip"
+//                         ],
+//                         "time"=>"2016-04-19T21:39:58+00:00",
+//                         "type"=>"library",
+//                         "installation-source"=>"",
+//                         "license"=>"commercial",
+//                         "description"=>"A simple Hello World model for Magento 2 MVVM (or MVVM like) system.",
+//                         "support"=>[
+//                             "source"=>"https://example.com/support",
+//                             "issues"=>"https://example.com/issues"
+//                         ]
+//                     ]
+//                 ]
+//             ]
+//         ];
+
+
 //         $json = '
 //         {
 //             "packages": {
