@@ -16,3 +16,5 @@ app/Http/Controllers/HomeController.php
 resources/views/auth/
 resources/views/home.blade.php
 resources/views/layouts/
+
+.DS_Store

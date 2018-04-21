@@ -10,4 +10,9 @@ class Version extends Model
     {
         return $normalizer->normalize($this->version);
     }
+
+    public function package()
+    {
+        return $this->belongsTo('App\Package');
+    }
 }
