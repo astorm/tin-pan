@@ -16,9 +16,9 @@ class IncludeDotJson extends Controller
         $this->versionManager = $versionManager;
     }
 
-    protected function getJsonConfigFromPackage($package, $version, $packageId)
+    protected function getJsonConfigFromPackageAndVersion($package, $version, $packageId)
     {
-        $versionNormalized  = $package
+        $versionNormalized  = $version
             ->getNormalizedVersion($this->versionManager);
         $fullName           = $package->getFullName();
         return [
@@ -29,7 +29,7 @@ class IncludeDotJson extends Controller
                     "type"=>"zip",
                     "url"=>"http://composer.pulsestorm.dynamic/dist/" .
                         $fullName . "/" .
-                        $package->getDisplayFilename()
+                        $package->getDisplayFilename($version)
                 ],
                 "time"=>$package->created_at,
                 "type"=>"library",
@@ -50,17 +50,21 @@ class IncludeDotJson extends Controller
         $json = ["packages"=>[]];
         foreach($packages as $package)
         {
-            $tmp = [];
-            $packageId  = $package->getFullName();
-            $version    = $package->getVersion();
-
-            if(!isset($json["packages"][$packageId]))
+            foreach($package->versions as $version)
             {
-                $json["packages"][$packageId] = [];
-            }
+                $tmp = [];
+                $packageId  = $package->getFullName();
 
-            $json["packages"][$packageId][$version]   = $this
-                ->getJsonConfigFromPackage($package, $version, $packageId);
+                $versionString    = $version->version;
+
+                if(!isset($json["packages"][$packageId]))
+                {
+                    $json["packages"][$packageId] = [];
+                }
+
+                $json["packages"][$packageId][$versionString]   = $this
+                    ->getJsonConfigFromPackageAndVersion($package, $version, $packageId);
+            }
         }
 
 

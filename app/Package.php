@@ -6,30 +6,25 @@ use Illuminate\Database\Eloquent\Model;
 
 class Package extends Model
 {
-    public function version()
+    public function versions()
     {
-        return $this->hasOne('App\Version');
+        return $this->hasMany('App\Version');
     }
 
-    public function getVersion()
-    {
-        return $this->version->version;
-    }
-
-    public function getNormalizedVersion($normalizer)
-    {
-        return $normalizer->normalize($this->getVersion());
-    }
+//     public function getVersion()
+//     {
+//         return $this->version->version;
+//     }
 
     public function getFullName()
     {
         return $this->vendor_name . '/' . $this->package_name;
     }
 
-    public function getDisplayFilename()
+    public function getDisplayFilename($version)
     {
         return $this->vendor_name . "-" . $this->package_name . '-' .
-            $this->getVersion() . ".zip";
+            $version->version . ".zip";
     }
 
     public function getVersionFromFilename($vendor, $packagename, $filename)
