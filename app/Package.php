@@ -11,6 +11,10 @@ class Package extends Model
         return $this->hasMany('App\Version');
     }
 
+    public function users()
+    {
+        return $this->belongsToMany('App\User');
+    }
 //     public function getVersion()
 //     {
 //         return $this->version->version;
