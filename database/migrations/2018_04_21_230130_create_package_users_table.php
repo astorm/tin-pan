@@ -18,7 +18,7 @@ class CreatePackageUsersTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->foreign('package_id')->references('id')->on('packages')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->timestamps();
+            $table->unique(array('package_id', 'user_id'));
         });
     }
 
