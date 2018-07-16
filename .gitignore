@@ -18,3 +18,4 @@ resources/views/home.blade.php
 resources/views/layouts/
 
 .DS_Store
+releases/
