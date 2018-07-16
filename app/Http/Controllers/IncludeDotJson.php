@@ -23,7 +23,7 @@ class IncludeDotJson extends Controller
         $fullName           = $package->getFullName();
         return [
                 "name"=>$packageId,
-                "version"=>$version,
+                "version"=>$version->version,
                 "version_normalized"=>$versionNormalized,
                 "dist"=>[
                     "type"=>"zip",
@@ -31,7 +31,7 @@ class IncludeDotJson extends Controller
                         $fullName . "/" .
                         $package->getDisplayFilename($version)
                 ],
-                "time"=>$package->created_at,
+                "time"=>is_object($package->created_at) ? $package->created_at->format(\DateTime::W3C) : '',
                 "type"=>"library",
                 "installation-source"=>"",
                 "license"=>"commercial",
@@ -52,6 +52,8 @@ class IncludeDotJson extends Controller
         {
             foreach($package->versions as $version)
             {
+                //if($package->vendor_name !== 'foo2'){continue;}
+
                 $tmp = [];
                 $packageId  = $package->getFullName();
 
